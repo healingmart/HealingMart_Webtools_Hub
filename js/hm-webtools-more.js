@@ -1,5 +1,5 @@
 /*
- * HealingMart Webtools More v1.0.0
+ * HealingMart Webtools More v1.1.0
  *
  * <button
  *   type="button"
@@ -45,12 +45,12 @@
       ".hm-more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}"+
       ".hm-more-card{min-width:0;min-height:68px;padding:10px 11px;display:grid;grid-template-columns:38px minmax(0,1fr) 26px;align-items:center;gap:9px;border:1px solid #e1e7ee;border-radius:13px;background:#fff;color:#172238;text-align:left;cursor:pointer}"+
       ".hm-more-card:hover{border-color:#bdc9d5;background:#fbfcfe}"+
-      ".hm-more-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#eef4ff;color:#356ab3;font-size:16px;font-weight:900}"+
+      ".hm-more-icon{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#f0f2f4;color:#606a76;font-size:16px;font-weight:900}"+
       ".hm-more-card strong{display:block;overflow:hidden;font-size:12px;font-weight:900;text-overflow:ellipsis;white-space:nowrap}"+
       ".hm-more-card span{display:block;margin-top:2px;overflow:hidden;color:#7a8798;font-size:8px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}"+
       ".hm-more-arrow{margin:0!important;color:#718095!important;font-size:17px!important}"+
       ".hm-more-footer{padding:2px 12px 13px}"+
-      ".hm-more-all{width:100%;min-height:43px;border:0;border-radius:12px;background:#eef4ff;color:#2c63ac;font-size:11px;font-weight:900;cursor:pointer}"+
+      ".hm-more-all{width:100%;min-height:43px;border:1px solid #dfe4ea;border-radius:12px;background:#f4f5f7;color:#4f5967;font-size:11px;font-weight:900;cursor:pointer}"+
       ".hm-more-empty{grid-column:1/-1;padding:26px 12px;color:#718095;font-size:11px;font-weight:800;text-align:center}"+
       "@media(max-width:560px){.hm-more-overlay{padding:7px 5px calc(7px + env(safe-area-inset-bottom))}.hm-more-panel{max-height:78vh;margin-bottom:76px;border-radius:19px}.hm-more-grid{grid-template-columns:1fr}}";
 
@@ -222,7 +222,7 @@
   });
 
   window.HMWebtoolsMore=Object.freeze({
-    version:"1.0.0",
+    version:"1.1.0",
     open:open
   });
 })(window,document);
