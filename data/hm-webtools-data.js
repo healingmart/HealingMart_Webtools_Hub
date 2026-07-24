@@ -1,20 +1,19 @@
 /*
- * HealingMart Webtools Data v5.5.0
+ * HealingMart Webtools Data v5.6.0
  *
- * 총 도구 수 = settings.baseToolCount + 공개된 독립 도구 수
+ * 표시 수량:
+ * - 기본 기능: 1,400종
+ * - 직접 연결 웹도구: available:true 항목 수
+ * - 현재 합계: 1,400 + 9 = 1,409종
  *
- * 기존 카테고리에 도구 추가:
- * - tools 배열에 도구 객체만 추가
- *
- * 새 카테고리 추가:
- * - categories 배열에 카테고리 객체 추가
- * - tools 배열의 category 값에 해당 카테고리 id 사용
+ * 신규 웹도구는 tools 배열에 추가합니다.
+ * 새 카테고리는 categories 배열과 tools 배열을 함께 수정합니다.
  */
 (function(window, document) {
   "use strict";
 
   var DATA = {
-  "version": "5.5.0",
+  "version": "5.6.0",
   "updatedAt": "2026-07-25",
   "site": {
     "brand": "힐링편의점",
@@ -30,7 +29,9 @@
     "showUnavailableTools": false,
     "searchPlaceholder": "도구 이름이나 기능을 검색하세요",
     "emptyMessage": "조건에 맞는 도구를 찾지 못했습니다.",
-    "baseToolCount": 1400
+    "baseToolCount": 1400,
+    "calculatorCollectionCount": 500,
+    "converterCollectionCount": 900
   },
   "categories": [
     {
@@ -101,12 +102,13 @@
   "tools": [
     {
       "id": "calculator-hub",
-      "name": "계산기 모음",
-      "shortName": "계산기 모음",
+      "name": "계산기 500종 모음",
+      "shortName": "계산기 500종",
       "category": "life",
-      "description": "생활, 금융, 건강, 날짜, 단위와 수학 계산기를 한곳에서 이용합니다.",
+      "description": "생활, 금융, 건강, 날짜, 단위와 수학 계산기 500종을 한곳에서 이용합니다.",
       "keywords": [
         "계산기",
+        "계산기 500종",
         "생활 계산기",
         "금융 계산기",
         "건강 계산기",
@@ -120,30 +122,56 @@
       "verified": true,
       "updatedAt": "2026-07-20",
       "order": 10,
-      "includedInBase": true
+      "includedInBase": true,
+      "collectionCount": 500
     },
     {
       "id": "converter-hub",
-      "name": "컨버터 모음",
-      "shortName": "변환도구 모음",
+      "name": "컨버터 900종 모음",
+      "shortName": "컨버터 900종",
       "category": "document",
-      "description": "파일, 문서, 이미지, 영상, 오디오와 단위 변환 기능을 한곳에서 이용합니다.",
+      "description": "파일, 문서, 이미지, 영상, 오디오와 단위 변환기 900종을 한곳에서 이용합니다.",
       "keywords": [
         "컨버터",
-        "변환기",
+        "컨버터 900종",
+        "변환기 900종",
         "파일 변환",
         "문서 변환",
         "이미지 변환",
         "단위 변환"
       ],
       "icon": "convert",
-      "url": "https://www.healing-mart.com/search/label/%EB%B3%80%ED%99%98%EB%8F%84%EA%B5%AC",
+      "url": "https://www.healing-mart.com/2026/07/converter.html",
       "available": true,
       "featured": true,
       "verified": true,
       "updatedAt": "2026-07-23",
       "order": 20,
-      "includedInBase": true
+      "includedInBase": true,
+      "collectionCount": 900
+    },
+    {
+      "id": "image-watermark",
+      "name": "이미지 자동 워터마크",
+      "shortName": "자동 워터마크",
+      "category": "image",
+      "description": "여러 이미지에 글자나 로고 워터마크를 빠르게 적용하고 저장하는 웹도구입니다.",
+      "keywords": [
+        "이미지 워터마크",
+        "자동 워터마크",
+        "워터마크 만들기",
+        "로고 워터마크",
+        "저작권 표시",
+        "Watermark Maker"
+      ],
+      "icon": "watermark",
+      "url": "https://www.healing-mart.com/2026/07/Watermark-Maker.html",
+      "available": true,
+      "featured": true,
+      "verified": true,
+      "updatedAt": "2026-07-25",
+      "order": 25,
+      "includedInBase": false
     },
     {
       "id": "text-counter",
@@ -304,27 +332,6 @@
       "status": "공개 주소 확인 대기",
       "updatedAt": "2026-07-24",
       "order": 90,
-      "includedInBase": false
-    },
-    {
-      "id": "image-watermark",
-      "name": "이미지 워터마크 도구",
-      "shortName": "워터마크",
-      "category": "image",
-      "description": "이미지에 글자 또는 로고 워터마크를 적용합니다.",
-      "keywords": [
-        "워터마크",
-        "로고",
-        "저작권",
-        "이미지 워터마크"
-      ],
-      "icon": "watermark",
-      "url": "",
-      "available": false,
-      "verified": false,
-      "status": "공개 주소 확인 대기",
-      "updatedAt": "2026-07-23",
-      "order": 100,
       "includedInBase": false
     }
   ]

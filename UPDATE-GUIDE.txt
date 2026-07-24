@@ -1,0 +1,33 @@
+HealingMart Webtools v5.6.0
+
+현재 표시
+- 총 1,409종
+- 계산기 500종
+- 변환기 900종
+- 직접 연결 웹도구 9개
+
+이번에 추가한 도구
+- 이미지 자동 워터마크
+- https://www.healing-mart.com/2026/07/Watermark-Maker.html
+- 이미지 카테고리
+- 신규 도구 영역 표시
+- 검색 및 전체 웹도구 표시
+- 관련 웹도구 더보기 표시
+
+총 수량 계산
+- settings.baseToolCount = 1400
+- available:true인 직접 연결 도구 수를 자동 합산
+- 현재 1,400 + 9 = 1,409종
+- 다음 도구 추가 시 1,410종으로 자동 증가
+
+GitHub 수정 파일
+- data/hm-webtools-data.js
+- js/hm-webtools-more.js
+
+Blogger 수정 파일
+- blogger-webtools-with-image-adsense-v5.6.0.html
+
+대표 이미지와 애드센스
+- 업로드한 원본 위치 유지
+- 광고 client와 slot 유지
+- 광고 크기 CSS 유지

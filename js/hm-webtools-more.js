@@ -1,5 +1,5 @@
 /*
- * HealingMart Webtools More v1.3.0
+ * HealingMart Webtools More v1.4.0
  *
  * <button
  *   type="button"
@@ -222,7 +222,7 @@
   });
 
   window.HMWebtoolsMore=Object.freeze({
-    version:"1.3.0",
+    version:"1.4.0",
     open:open
   });
 })(window,document);
