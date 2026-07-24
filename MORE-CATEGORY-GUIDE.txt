@@ -1,0 +1,19 @@
+카테고리 값
+
+이미지: image
+영상: video
+글쓰기: writing
+생활: life
+문서·변환: document
+오디오: audio
+데이터: data
+개발자: developer
+전체: all
+
+예시:
+data-hm-webtools-more="image"
+
+현재 페이지 도구를 목록에서 제외:
+data-current-tool="image-renamer"
+
+data-current-tool 값은 hm-webtools-data.js의 id와 같아야 합니다.

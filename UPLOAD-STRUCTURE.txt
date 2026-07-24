@@ -1,0 +1,11 @@
+ZIP 안의 파일과 폴더를 저장소 최상단에 올립니다.
+
+data/
+  hm-webtools-data.js
+js/
+  hm-webtools-more.js
+blogger-webtools-post-v5.1.html
+blogger-tool-more-snippet.html
+MORE-CATEGORY-GUIDE.txt
+README.md
+UPLOAD-STRUCTURE.txt
