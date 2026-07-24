@@ -3,28 +3,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="이미지, 영상, 글쓰기, 생활, 문서와 변환 도구를 한곳에서 찾는 힐링편의점 웹도구 허브입니다.">
   <title>힐링편의점 웹도구</title>
   <style>
     html,body{margin:0;min-height:100%;background:#f5f7fb}
-    body{padding-bottom:92px}
-    .hm-hub-bottom{width:min(620px,calc(100% - 24px));min-height:58px;padding:5px 8px;position:fixed;left:50%;bottom:12px;z-index:2147483000;transform:translateX(-50%);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;border:1px solid rgba(203,213,225,.95);border-radius:18px;background:rgba(255,255,255,.97);box-shadow:0 12px 34px rgba(15,23,42,.18);backdrop-filter:blur(16px);box-sizing:border-box;font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",Arial,sans-serif}
-    .hm-hub-bottom a,.hm-hub-bottom button{min-width:0;min-height:46px;padding:6px 8px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#334155;background:transparent;font:inherit;font-size:13px;font-weight:850;text-decoration:none;cursor:pointer}
-    .hm-hub-bottom button{color:#fff;background:linear-gradient(135deg,#6d5dfc,#2f7cf6);box-shadow:0 7px 18px rgba(60,93,230,.24)}
-    @media(max-width:700px){body{padding-bottom:88px}.hm-hub-bottom{width:calc(100% - 16px);min-height:70px;bottom:8px;padding:6px 7px calc(6px + env(safe-area-inset-bottom));border-radius:20px}.hm-hub-bottom a,.hm-hub-bottom button{min-height:58px;padding:5px 3px;font-size:11px}}
+    body{padding-bottom:0}
+    #healingMartWebtoolsApp{width:100%;max-width:1500px;margin:0 auto;padding:0 6px;box-sizing:border-box}
+    #healingMartWebtoolsApp *{box-sizing:border-box}
+    .hm-webtools-bottom-boundary{width:1px;height:1px;display:block;visibility:hidden;pointer-events:none}
+    .hm-webtools-bottom-nav{width:min(620px,calc(100% - 24px));min-height:58px;padding:5px 8px;position:fixed;left:50%;bottom:12px;z-index:1000;transform:translateX(-50%);display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;border:1px solid #cbd5e1;border-radius:18px;background:rgba(255,255,255,.97);box-shadow:0 12px 34px rgba(15,23,42,.18);backdrop-filter:blur(16px);transition:opacity .18s ease,visibility .18s ease,transform .18s ease;font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    .hm-webtools-bottom-nav button{min-height:46px;border:0;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:7px;background:transparent;color:#334155;font:inherit;font-size:14px;font-weight:850;cursor:pointer}
+    .hm-webtools-bottom-nav button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .hm-webtools-bottom-nav button[data-hm-webtools-nav="search"]{color:#fff;background:linear-gradient(135deg,#6d5dfc,#2f7cf6)}
+    .hm-webtools-bottom-nav.hm-bottom-nav-outside{opacity:0;visibility:hidden;pointer-events:none;transform:translate(-50%,calc(100% + 34px))}
+    @media(max-width:760px){#healingMartWebtoolsApp{padding:0 1px}.hm-webtools-bottom-nav{width:calc(100% - 16px);min-height:70px;bottom:8px;padding:6px 7px;border-radius:20px}.hm-webtools-bottom-nav button{min-height:58px;flex-direction:column;gap:3px;font-size:12px}}
   </style>
 </head>
 <body>
-  <main data-hm-webtools-page></main>
-
-  <nav class="hm-hub-bottom" aria-label="힐링편의점 웹도구 빠른 메뉴">
-    <a href="https://www.healing-mart.com/">홈</a>
-    <button type="button" data-hm-webtools-open>빠른찾기</button>
-    <a href="#hm-webtools-latest">새 도구</a>
-    <a href="https://www.healing-mart.com/p/qna.html">문의</a>
+  <div id="healingMartWebtoolsApp" data-hm-webtools-app>
+    <section data-hm-webtools-stage aria-live="polite"><div style="min-height:340px;display:grid;place-items:center;font-family:sans-serif;color:#475569;font-weight:800">웹도구를 불러오는 중입니다.</div></section>
+  </div>
+  <span class="hm-webtools-bottom-boundary" data-hm-webtools-bottom-boundary aria-hidden="true"></span>
+  <nav class="hm-webtools-bottom-nav hm-bottom-nav-outside" aria-label="웹도구 빠른 메뉴" aria-hidden="true">
+    <button type="button" data-hm-webtools-nav="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg><span>빠른찾기</span></button>
+    <button type="button" data-hm-webtools-nav="recent"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v5h5"></path><path d="M12 7v5l3 2"></path></svg><span>최근사용</span></button>
+    <button type="button" data-hm-webtools-nav="latest"><svg viewBox="0 0 24 24"><path d="m12 3 1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5Z"></path></svg><span>신규도구</span></button>
+    <button type="button" data-hm-webtools-nav="categories"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"></rect><rect x="14" y="4" width="6" height="6" rx="1"></rect><rect x="4" y="14" width="6" height="6" rx="1"></rect><rect x="14" y="14" width="6" height="6" rx="1"></rect></svg><span>카테고리</span></button>
   </nav>
-
-  <script src="./js/hm-webtools-data.v1.js"></script>
-  <script src="./js/hm-webtools-design.v1.js"></script>
+  <script defer src="./js/hm-webtools-data.js"></script>
+  <script defer src="./js/hm-webtools-design.js" data-base="."></script>
 </body>
 </html>
