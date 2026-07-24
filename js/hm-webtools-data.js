@@ -1,12 +1,12 @@
 /*
- * HealingMart Web Tools Registry v3.0.0
+ * HealingMart Web Tools Registry v3.1.0
  * 이 파일만 수정하면 빠른찾기와 토탈 웹도구 페이지가 함께 갱신됩니다.
  */
 (function (window) {
   "use strict";
 
   const DATA = {
-    version: "3.0.0",
+    version: "3.1.0",
     updatedAt: "2026-07-24",
 
     site: {

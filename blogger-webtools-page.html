@@ -38,7 +38,7 @@ body:has(#healingMartWebtoolsApp) .post-outer,body:has(#healingMartWebtoolsApp) 
 @media(max-width:760px){.hm-webtools-bottom-nav{width:calc(100% - 16px);max-width:540px;min-height:70px;padding:6px 7px calc(6px + env(safe-area-inset-bottom));bottom:8px;border-radius:20px;gap:4px}.hm-webtools-bottom-nav button{min-height:58px;padding:5px 3px;flex-direction:column;gap:3px;border-radius:14px;font-size:12px;line-height:1.15}.hm-webtools-bottom-nav button svg{width:22px;height:22px}.hm-webtools-bottom-nav.hm-bottom-nav-outside{transform:translate(-50%,calc(100% + 26px))!important}}
 </style>
 
-<div id="healingMartWebtoolsApp" data-hm-webtools-app data-tool-id="healingmart-webtools" data-tool-name="힐링편의점 웹도구" data-tool-version="3.0.0">
+<div id="healingMartWebtoolsApp" data-hm-webtools-app data-tool-id="healingmart-webtools" data-tool-name="힐링편의점 웹도구" data-tool-version="3.1.0">
   <section data-hm-webtools-stage aria-live="polite" aria-busy="true">
     <div style="min-height:340px;display:grid;place-items:center;color:#475569;font-size:15px;font-weight:800;">웹도구를 불러오는 중입니다.</div>
   </section>
@@ -61,8 +61,93 @@ body:has(#healingMartWebtoolsApp) .post-outer,body:has(#healingMartWebtoolsApp) 
   </button>
 </nav>
 
-<script defer crossorigin="anonymous" src="https://healingmart.github.io/healingmart-webtools-hub/js/hm-webtools-data.js"></script>
-<script defer crossorigin="anonymous" src="https://healingmart.github.io/healingmart-webtools-hub/js/hm-webtools-design.js" data-base="https://healingmart.github.io/healingmart-webtools-hub" data-data-url="https://healingmart.github.io/healingmart-webtools-hub/js/hm-webtools-data.js"></script>
+<script>
+(function(window,document){
+  "use strict";
+
+  var VERSION="3.1.0";
+  var PAGE_BASE="https://healingmart.github.io/healingmart-webtools-hub";
+  var CDN_BASE="https://cdn.jsdelivr.net/gh/healingmart/healingmart-webtools-hub@main";
+
+  function withVersion(url){
+    return url+(url.indexOf("?")>=0?"&":"?")+"v="+encodeURIComponent(VERSION);
+  }
+
+  function loadOne(url,attributes){
+    return new Promise(function(resolve,reject){
+      var script=document.createElement("script");
+      script.src=withVersion(url);
+      script.async=true;
+
+      if(attributes){
+        Object.keys(attributes).forEach(function(name){
+          script.setAttribute(name,attributes[name]);
+        });
+      }
+
+      script.onload=function(){resolve(script);};
+      script.onerror=function(){
+        script.remove();
+        reject(new Error("스크립트 로딩 실패: "+url));
+      };
+
+      document.head.appendChild(script);
+    });
+  }
+
+  function loadWithFallback(urls,attributes){
+    var index=0;
+
+    function next(lastError){
+      if(index>=urls.length){
+        return Promise.reject(lastError||new Error("사용 가능한 스크립트 주소가 없습니다."));
+      }
+
+      var url=urls[index++];
+      return loadOne(url,attributes).catch(next);
+    }
+
+    return next();
+  }
+
+  var dataUrls=[
+    PAGE_BASE+"/js/hm-webtools-data.js",
+    CDN_BASE+"/js/hm-webtools-data.js"
+  ];
+
+  var designUrls=[
+    PAGE_BASE+"/js/hm-webtools-design.js",
+    CDN_BASE+"/js/hm-webtools-design.js"
+  ];
+
+  loadWithFallback(dataUrls)
+    .then(function(){
+      return loadWithFallback(designUrls,{
+        "data-base":PAGE_BASE,
+        "data-data-url":PAGE_BASE+"/js/hm-webtools-data.js"
+      });
+    })
+    .catch(function(error){
+      console.error("[HealingMart Webtools Loader]",error);
+      var stage=document.querySelector("[data-hm-webtools-stage]");
+      if(!stage)return;
+
+      stage.replaceChildren();
+      var box=document.createElement("div");
+      box.style.cssText="max-width:760px;min-height:260px;margin:30px auto;padding:30px 20px;display:grid;place-items:center;border:1px solid #fecaca;border-radius:18px;color:#7f1d1d;background:#fff7f7;text-align:center;";
+      var inner=document.createElement("div");
+      var strong=document.createElement("strong");
+      strong.textContent="웹도구 파일을 불러오지 못했습니다.";
+      strong.style.cssText="display:block;margin-bottom:8px;font-size:20px;";
+      var span=document.createElement("span");
+      span.textContent="GitHub 저장소 루트의 js 폴더와 GitHub Pages 배포 상태를 확인해 주세요.";
+      span.style.cssText="font-size:13px;line-height:1.7;";
+      inner.append(strong,span);
+      box.appendChild(inner);
+      stage.appendChild(box);
+    });
+})(window,document);
+</script>
 
 <script>
 window.setTimeout(function(){
@@ -76,5 +161,5 @@ window.setTimeout(function(){
   var strong=document.createElement("strong");strong.textContent="웹도구를 불러오지 못했습니다.";strong.style.cssText="display:block;margin-bottom:8px;font-size:20px;";
   var span=document.createElement("span");span.textContent="GitHub 저장소의 js/hm-webtools-data.js와 js/hm-webtools-design.js 경로를 확인해 주세요.";span.style.cssText="font-size:13px;line-height:1.7;";
   inner.append(strong,span);box.appendChild(inner);stage.appendChild(box);
-},15000);
+},18000);
 </script>

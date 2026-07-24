@@ -1,5 +1,5 @@
 /*
- * HealingMart Web Tools Hub UI v3.0.0
+ * HealingMart Web Tools Hub UI v3.1.0
  * Calculator-style Blogger directory, quick search, recent tools and latest carousel.
  */
 (function (window, document) {
@@ -13,7 +13,7 @@
     ? String(CURRENT_SCRIPT.dataset.dataUrl)
     : BASE_URL + "/js/hm-webtools-data.js";
 
-  var VERSION = "3.0.0";
+  var VERSION = "3.1.0";
   var STYLE_ID = "hmWebtoolsStyleV3";
   var PAGE_SELECTORS = "[data-hm-webtools-stage],[data-hm-webtools-page]";
   var SEARCH_SHEET_ID = "hmWebtoolsSearchSheet";
@@ -194,7 +194,6 @@
 
       script.src = appendCacheKey(url);
       script.async = true;
-      script.crossOrigin = "anonymous";
       script.onload = function(){
         if (settled) return;
         settled = true;

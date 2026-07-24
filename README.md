@@ -1,10 +1,15 @@
-# HealingMart Webtools Hub v3.0.0
+# HealingMart Webtools Hub v3.1.0
 
-## 핵심 운영 방식
+## 이번 수정
 
-Blogger의 `/p/webtools.html` 코드는 한 번만 등록합니다. 이후 신규 도구와 URL은 `js/hm-webtools-data.js`만 수정합니다.
+- Blogger 외부 스크립트에서 `crossorigin="anonymous"` 제거
+- 동적 데이터 로더의 `script.crossOrigin` 제거
+- GitHub Pages 실패 시 jsDelivr CDN을 자동으로 한 번 더 시도
+- Blogger 페이지는 한 번만 설치하고 이후 `js/hm-webtools-data.js`만 갱신
+- 하단 메뉴는 빠른찾기·최근사용·신규도구·카테고리 4개
+- 웹도구 영역이 끝나면 하단 메뉴 자동 숨김
 
-## 업로드 구조
+## 저장소 구조
 
 ```text
 healingmart-webtools-hub/
@@ -13,25 +18,38 @@ healingmart-webtools-hub/
 ├─ js/
 │  ├─ hm-webtools-data.js
 │  └─ hm-webtools-design.js
-├─ .nojekyll
-└─ README.md
+├─ README.md
+└─ .nojekyll
 ```
+
+## 반드시 확인할 주소
+
+GitHub Pages 배포 후 다음 두 주소를 브라우저 주소창에서 직접 열었을 때
+JavaScript 코드가 보여야 합니다.
+
+```text
+https://healingmart.github.io/healingmart-webtools-hub/js/hm-webtools-data.js
+https://healingmart.github.io/healingmart-webtools-hub/js/hm-webtools-design.js
+```
+
+404 페이지가 보이면 저장소 안에 상위 폴더가 한 번 더 들어간 것입니다.
+`js` 폴더가 저장소 최상단에 오도록 파일을 옮겨야 합니다.
 
 ## 적용 순서
 
-1. ZIP을 풉니다.
-2. 저장소 루트에 모든 파일을 덮어씁니다.
-3. GitHub Pages가 `main / root`를 배포하도록 설정합니다.
-4. Blogger `/p/webtools.html`을 HTML 보기로 열고 `blogger-webtools-page.html` 전체 코드를 붙입니다.
+1. ZIP 압축을 풉니다.
+2. ZIP 안의 파일과 `js` 폴더를 저장소 최상단에 덮어씁니다.
+3. GitHub Pages 배포가 완료될 때까지 기다립니다.
+4. 위의 두 JS 주소를 직접 확인합니다.
+5. Blogger `/p/webtools.html`의 HTML 전체를 `blogger-webtools-page.html` 내용으로 교체합니다.
+6. 강력 새로고침을 실행합니다.
 
-## 이후 업데이트
+## 이후 도구 업데이트
 
-- 신규 도구 추가: `js/hm-webtools-data.js`만 수정
-- 디자인 변경: `js/hm-webtools-design.js` 수정
-- Blogger 페이지 HTML은 수정하지 않음
+Blogger 페이지는 수정하지 않습니다.
 
-## 하단 메뉴
+```text
+js/hm-webtools-data.js
+```
 
-빠른찾기 / 최근사용 / 신규도구 / 카테고리
-
-웹도구 앱의 실제 끝 지점이 화면에 들어오면 하단 메뉴가 자동으로 내려가 숨겨집니다.
+이 파일의 도구 목록만 수정합니다.
