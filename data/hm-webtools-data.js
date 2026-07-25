@@ -1,12 +1,12 @@
 /*
- * HealingMart Webtools Data v5.7.0
+ * HealingMart Webtools Data v5.8.0
  * 단일 웹도구 데이터 원본
  */
 (function (window, document) {
   "use strict";
 
   window.HM_WEBTOOLS_DATA = {
-  "version": "5.7.0",
+  "version": "5.8.0",
   "updatedAt": "2026-07-25",
   "site": {
     "brand": "힐링편의점",
@@ -344,7 +344,7 @@
 
   if (document && typeof document.dispatchEvent === "function") {
     document.dispatchEvent(new CustomEvent("hm:webtools:data-ready", {
-      detail: { version: "5.7.0" }
+      detail: { version: "5.8.0" }
     }));
   }
 })(window, document);
