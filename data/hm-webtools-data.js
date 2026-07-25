@@ -1,26 +1,20 @@
 /*
- * HealingMart Webtools Data v5.6.0
- *
- * 표시 수량:
- * - 기본 기능: 1,400종
- * - 직접 연결 웹도구: available:true 항목 수
- * - 현재 합계: 1,400 + 9 = 1,409종
- *
- * 신규 웹도구는 tools 배열에 추가합니다.
- * 새 카테고리는 categories 배열과 tools 배열을 함께 수정합니다.
+ * HealingMart Webtools Data v5.7.0
+ * 단일 웹도구 데이터 원본
  */
-(function(window, document) {
+(function (window, document) {
   "use strict";
 
-  var DATA = {
-  "version": "5.6.0",
+  window.HM_WEBTOOLS_DATA = {
+  "version": "5.7.0",
   "updatedAt": "2026-07-25",
   "site": {
     "brand": "힐링편의점",
     "title": "무료 웹도구 모음",
     "description": "계산기, 변환기, 이미지, 글쓰기와 생활 웹도구를 한곳에서 빠르게 찾아보세요.",
     "homeUrl": "https://www.healing-mart.com/",
-    "qnaUrl": "https://www.healing-mart.com/p/qna.html"
+    "qnaUrl": "https://www.healing-mart.com/p/qna.html",
+    "hubUrl": "https://www.healing-mart.com/2026/07/Webtools.html"
   },
   "settings": {
     "latestLimit": 8,
@@ -31,7 +25,10 @@
     "emptyMessage": "조건에 맞는 도구를 찾지 못했습니다.",
     "baseToolCount": 1400,
     "calculatorCollectionCount": 500,
-    "converterCollectionCount": 900
+    "converterCollectionCount": 900,
+    "featuredLimit": 4,
+    "moreFeaturedLimit": 4,
+    "categoryParam": "category"
   },
   "categories": [
     {
@@ -123,7 +120,8 @@
       "updatedAt": "2026-07-20",
       "order": 10,
       "includedInBase": true,
-      "collectionCount": 500
+      "collectionCount": 500,
+      "featuredOrder": 10
     },
     {
       "id": "converter-hub",
@@ -148,7 +146,8 @@
       "updatedAt": "2026-07-23",
       "order": 20,
       "includedInBase": true,
-      "collectionCount": 900
+      "collectionCount": 900,
+      "featuredOrder": 20
     },
     {
       "id": "image-watermark",
@@ -171,7 +170,8 @@
       "verified": true,
       "updatedAt": "2026-07-25",
       "order": 25,
-      "includedInBase": false
+      "includedInBase": false,
+      "featuredOrder": 40
     },
     {
       "id": "text-counter",
@@ -196,7 +196,8 @@
       "verified": true,
       "updatedAt": "2025-02-10",
       "order": 30,
-      "includedInBase": false
+      "includedInBase": false,
+      "featuredOrder": 30
     },
     {
       "id": "background-remove",
@@ -219,7 +220,8 @@
       "verified": true,
       "updatedAt": "2025-02-11",
       "order": 40,
-      "includedInBase": false
+      "includedInBase": false,
+      "featuredOrder": 50
     },
     {
       "id": "multi-image-crop",
@@ -243,7 +245,8 @@
       "verified": true,
       "updatedAt": "2025-03-10",
       "order": 50,
-      "includedInBase": false
+      "includedInBase": false,
+      "featuredOrder": 60
     },
     {
       "id": "circle-image-crop",
@@ -310,7 +313,8 @@
       "verified": true,
       "updatedAt": "2026-07-10",
       "order": 80,
-      "includedInBase": false
+      "includedInBase": false,
+      "featuredOrder": 70
     },
     {
       "id": "image-renamer",
@@ -336,13 +340,11 @@
     }
   ]
 };
-
-  window.HM_WEBTOOLS_DATA = DATA;
   window.HM_WEBTOOLS_DATA_SOURCE = "data-js";
 
-  try {
+  if (document && typeof document.dispatchEvent === "function") {
     document.dispatchEvent(new CustomEvent("hm:webtools:data-ready", {
-      detail: { version: DATA.version }
+      detail: { version: "5.7.0" }
     }));
-  } catch (error) {}
+  }
 })(window, document);
