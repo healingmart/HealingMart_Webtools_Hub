@@ -1,5 +1,5 @@
 /*
- * HealingMart Webtools More v3.2.0
+ * HealingMart Webtools More v3.3.0
  * 공통 하단 메뉴 + 카테고리/전체도구 바텀시트
  *
  * 게시물에서는 현재 도구 정보만 data-* 속성으로 전달합니다.
@@ -10,10 +10,10 @@
   if (window.HMWebtoolsMore && window.HMWebtoolsMore.version) return;
 
   var SCRIPT = document.currentScript;
-  var VERSION = "3.2.0";
+  var VERSION = "3.3.0";
   var NAV_ID = "hmWebtoolsBottomNav";
   var OVERLAY_ID = "hmWebtoolsOverlay";
-  var STYLE_ID = "hmWebtoolsMoreStyleV320";
+  var STYLE_ID = "hmWebtoolsMoreStyleV330";
   var DEFAULT_HOME_URL = "https://www.healing-mart.com/";
   var DEFAULT_HUB_URL = "https://www.healing-mart.com/2026/07/Webtools.html";
   var DEFAULT_DATA_URL = "https://healingmart.github.io/healingmart-webtools-hub/data/hm-webtools-data.js?v=5.7.0";
@@ -37,11 +37,27 @@
     nav: null,
     overlay: null,
     accent: "#334155",
-    accentRgb: "51,65,85"
+    accentRgb: "51,65,85",
+    endObserver: null
   };
 
   function attr(name) {
     return SCRIPT ? String(SCRIPT.getAttribute(name) || "").trim() : "";
+  }
+
+  function navAttr(nav, name) {
+    return nav ? String(nav.getAttribute(name) || "").trim() : "";
+  }
+
+  function hydrateConfigFromNav(nav) {
+    if (!nav) return;
+    config.toolId = config.toolId || navAttr(nav, "data-current-tool") || navAttr(nav, "data-tool-id");
+    config.categoryId = config.categoryId || navAttr(nav, "data-current-category") || navAttr(nav, "data-category");
+    config.categoryLabel = config.categoryLabel || navAttr(nav, "data-category-label");
+    config.resetSelector = config.resetSelector || navAttr(nav, "data-reset-selector");
+    config.homeUrl = navAttr(nav, "data-home-url") || config.homeUrl;
+    config.hubUrl = navAttr(nav, "data-hub-url") || config.hubUrl;
+    config.accent = config.accent || navAttr(nav, "data-accent");
   }
 
   function create(tag, className, text) {
@@ -78,7 +94,7 @@
       crop: [["path", { d: "M7 3v14a2 2 0 0 0 2 2h12" }], ["path", { d: "M3 7h14a2 2 0 0 1 2 2v12" }]]
     };
 
-    (defs[name] || defs.all).forEach(function (part) {
+    (defs[name] || defs.category).forEach(function (part) {
       var child = document.createElementNS(ns, part[0]);
       Object.keys(part[1]).forEach(function (key) {
         child.setAttribute(key, part[1][key]);
@@ -147,6 +163,8 @@
     style.textContent = [
       ".hm-more-nav,.hm-more-nav *,.hm-more-layer,.hm-more-layer *{box-sizing:border-box}",
       ".hm-more-nav{position:fixed;left:50%;bottom:12px;z-index:2147483000;width:min(760px,calc(100% - 24px));min-height:66px;padding:7px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;transform:translateX(-50%);border:1px solid rgba(203,213,225,.96);border-radius:20px;background:rgba(255,255,255,.97);box-shadow:0 15px 42px rgba(15,23,42,.2);backdrop-filter:blur(16px);font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans KR',Arial,sans-serif}",
+      ".hm-more-nav{transition:opacity .18s ease,visibility .18s ease,transform .18s ease}",
+      ".hm-more-nav.hm-more-nav-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:translate(-50%,calc(100% + 38px))}",
       ".hm-more-nav button{min-width:0;min-height:50px;padding:6px 5px;border:0;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:7px;color:#475569;background:transparent;font:inherit;font-size:13px;font-weight:850;line-height:1.15;cursor:pointer;-webkit-tap-highlight-color:transparent}",
       ".hm-more-nav button:hover{color:var(--hm-more-accent);background:rgba(var(--hm-more-accent-rgb),.09)}",
       ".hm-more-nav button[data-action='category']{color:#fff;background:var(--hm-more-accent);box-shadow:0 8px 20px rgba(var(--hm-more-accent-rgb),.25)}",
@@ -195,31 +213,84 @@
     return button;
   }
 
+  function bindNav(nav) {
+    if (!nav || nav.getAttribute("data-hm-bound") === "true") return;
+    nav.setAttribute("data-hm-bound", "true");
+
+    var home = nav.querySelector("[data-action='home']");
+    var reset = nav.querySelector("[data-action='reset']");
+    var category = nav.querySelector("[data-action='category']");
+    var all = nav.querySelector("[data-action='all']");
+    var share = nav.querySelector("[data-action='share']");
+
+    if (home) home.addEventListener("click", function () { window.location.href = getHomeUrl(); });
+    if (reset) reset.addEventListener("click", resetTool);
+    if (category) category.addEventListener("click", openCategory);
+    if (all) all.addEventListener("click", openAll);
+    if (share) share.addEventListener("click", sharePage);
+  }
+
+  function setupEndHide(nav) {
+    if (!nav) return;
+    var sentinel = document.querySelector("[data-hm-bottom-end]");
+    if (!sentinel) return;
+
+    function setHidden(hidden) {
+      nav.classList.toggle("hm-more-nav-hidden", !!hidden);
+      nav.setAttribute("aria-hidden", hidden ? "true" : "false");
+    }
+
+    if ("IntersectionObserver" in window) {
+      if (state.endObserver) state.endObserver.disconnect();
+      state.endObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          setHidden(entry.isIntersecting);
+        });
+      }, {
+        root: null,
+        threshold: 0,
+        rootMargin: "0px 0px 72px 0px"
+      });
+      state.endObserver.observe(sentinel);
+      return;
+    }
+
+    function fallbackCheck() {
+      var rect = sentinel.getBoundingClientRect();
+      setHidden(rect.top <= window.innerHeight + 72 && rect.bottom >= 0);
+    }
+    window.addEventListener("scroll", fallbackCheck, { passive: true });
+    window.addEventListener("resize", fallbackCheck);
+    fallbackCheck();
+  }
+
   function makeNav() {
-    if (document.getElementById(NAV_ID)) return document.getElementById(NAV_ID);
+    var existing = document.getElementById(NAV_ID);
+    if (existing) {
+      existing.classList.add("hm-more-nav");
+      hydrateConfigFromNav(existing);
+      state.nav = existing;
+      bindNav(existing);
+      setupEndHide(existing);
+      return existing;
+    }
+
+    if (attr("data-auto-nav") === "false") return null;
+
     var nav = create("nav", "hm-more-nav");
     nav.id = NAV_ID;
     nav.setAttribute("aria-label", "웹도구 공통 메뉴");
 
-    var home = navButton("home", "홈", "home");
-    var reset = navButton("reset", "초기화", "reset");
-    var category = navButton("category", config.categoryLabel || "카테고리", "category");
-    var all = navButton("all", "전체 도구", "all");
-    var share = navButton("share", "공유", "share");
+    nav.appendChild(navButton("home", "홈", "home"));
+    nav.appendChild(navButton("reset", "초기화", "reset"));
+    nav.appendChild(navButton("category", config.categoryLabel || "카테고리", "category"));
+    nav.appendChild(navButton("all", "전체 도구", "all"));
+    nav.appendChild(navButton("share", "공유", "share"));
 
-    home.addEventListener("click", function () { window.location.href = getHomeUrl(); });
-    reset.addEventListener("click", resetTool);
-    category.addEventListener("click", function () { openCategory(); });
-    all.addEventListener("click", function () { openAll(); });
-    share.addEventListener("click", sharePage);
-
-    nav.appendChild(home);
-    nav.appendChild(reset);
-    nav.appendChild(category);
-    nav.appendChild(all);
-    nav.appendChild(share);
     document.body.appendChild(nav);
     state.nav = nav;
+    bindNav(nav);
+    setupEndHide(nav);
     return nav;
   }
 
@@ -542,6 +613,7 @@
   }
 
   function start() {
+    hydrateConfigFromNav(document.getElementById(NAV_ID));
     injectStyle();
     applyAccent();
     makeNav();
