@@ -1,5 +1,5 @@
 /*
- * HealingMart Webtools More v2.0.0
+ * HealingMart Webtools More v2.0.1
  *
  * 개별 웹도구 게시물의 기존 실행 JS 아래에 이 파일만 연결하면
  * 홈 · 빠른찾기 · 최근사용 · 카테고리 바텀이 자동 생성됩니다.
@@ -14,8 +14,20 @@
   }
 
   var SCRIPT=document.currentScript;
-  var DATA_URL=(SCRIPT&&SCRIPT.getAttribute("data-data-url"))||
-    "https://cdn.jsdelivr.net/gh/healingmart/healingmart-webtools-hub@main/data/hm-webtools-data.js";
+  function resolveDataUrl(){
+    var explicit=SCRIPT&&SCRIPT.getAttribute("data-data-url");
+    if(explicit)return explicit;
+
+    if(SCRIPT&&SCRIPT.src){
+      try{
+        return new URL("../data/hm-webtools-data.js",SCRIPT.src).href;
+      }catch(error){}
+    }
+
+    return "https://cdn.jsdelivr.net/gh/healingmart/healingmart-webtools-hub@main/data/hm-webtools-data.js";
+  }
+
+  var DATA_URL=resolveDataUrl();
   var DEFAULT_HUB_URL="https://www.healing-mart.com/2026/07/Webtools.html";
   var STYLE_ID="hmWebtoolsMoreStyleV2";
   var NAV_ID="hmWebtoolsBottomNav";
@@ -24,7 +36,7 @@
   var loadingPromise=null;
   var currentTool=null;
   var dataCache=null;
-  var boundary=null;
+  var footerTarget=null;
   var activeOverlay=null;
 
   function el(tag,className,text){
@@ -389,50 +401,70 @@
     return button;
   }
 
-  function installBoundary(){
-    boundary=el("span");
-    boundary.setAttribute("data-hm-webtools-bottom-boundary","");
-    boundary.setAttribute("aria-hidden","true");
-    boundary.style.cssText="width:1px;height:1px;display:block;margin:0;padding:0;visibility:hidden;pointer-events:none";
+  function findFooterTarget(){
+    var selectors=[
+      "#footer-wrapper",
+      ".footer-wrapper",
+      "#footer",
+      ".site-footer",
+      "footer"
+    ];
 
-    if(SCRIPT&&SCRIPT.parentNode){
-      SCRIPT.parentNode.insertBefore(boundary,SCRIPT.nextSibling);
-    }else{
-      document.body.appendChild(boundary);
+    for(var i=0;i<selectors.length;i+=1){
+      var node=document.querySelector(selectors[i]);
+      if(node)return node;
     }
+
+    return null;
+  }
+
+  function removeLegacyBoundary(){
+    document.querySelectorAll("[data-hm-webtools-bottom-boundary]").forEach(function(node){
+      node.remove();
+    });
   }
 
   function updateNavVisibility(nav){
-    if(!boundary||!nav)return;
-    var rect=boundary.getBoundingClientRect();
-    var reached=rect.top<=window.innerHeight-20;
+    if(!nav)return;
+
+    if(!footerTarget||!document.documentElement.contains(footerTarget)){
+      footerTarget=findFooterTarget();
+    }
+
+    var reached=false;
+    if(footerTarget){
+      reached=footerTarget.getBoundingClientRect().top<=window.innerHeight-8;
+    }
+
     nav.classList.toggle("hm-bottom-nav-outside",reached);
     nav.setAttribute("aria-hidden",reached?"true":"false");
   }
 
-  function installNav(data){
+  function installNav(){
     if(document.getElementById(NAV_ID))return;
+    if(document.querySelector(".hm-tools-bottom-nav,.hm-calc-bottom-nav"))return;
+
     injectStyle();
-    currentTool=detectCurrentTool(data);
-    saveRecent(currentTool);
+    removeLegacyBoundary();
 
     var nav=el("nav","hm-webtools-bottom-nav");
     nav.id=NAV_ID;
     nav.setAttribute("aria-label","웹도구 빠른 메뉴");
+    nav.setAttribute("aria-hidden","false");
 
     var home=makeNavButton("home","홈");
     var search=makeNavButton("search","빠른찾기");
     var recent=makeNavButton("recent","최근사용");
     var categories=makeNavButton("categories","카테고리");
 
-    home.addEventListener("click",function(){window.location.href=(data.site&&data.site.homeUrl)||"https://www.healing-mart.com/";});
+    home.addEventListener("click",function(){window.location.href=(dataCache&&dataCache.site&&dataCache.site.homeUrl)||"https://www.healing-mart.com/";});
     search.addEventListener("click",function(){openSheet("search");});
     recent.addEventListener("click",function(){openSheet("recent");});
     categories.addEventListener("click",function(){openSheet("category","");});
 
     nav.append(home,search,recent,categories);
     document.body.appendChild(nav);
-    installBoundary();
+    footerTarget=findFooterTarget();
 
     var ticking=false;
     function requestUpdate(){
@@ -464,17 +496,22 @@
 
   function start(){
     if(SCRIPT&&SCRIPT.getAttribute("data-auto-nav")==="false")return;
+
+    installNav();
+
     loadData().then(function(data){
       dataCache=data;
-      installNav(data);
-      document.dispatchEvent(new CustomEvent("hm:webtools:more-ready",{detail:{version:"2.0.0"}}));
+      currentTool=detectCurrentTool(data);
+      saveRecent(currentTool);
+      document.dispatchEvent(new CustomEvent("hm:webtools:more-ready",{detail:{version:"2.0.1",dataUrl:DATA_URL}}));
     }).catch(function(error){
       console.error("[HealingMart Webtools More]",error);
+      document.dispatchEvent(new CustomEvent("hm:webtools:more-error",{detail:{version:"2.0.1",dataUrl:DATA_URL,message:error.message}}));
     });
   }
 
   window.HMWebtoolsMore=Object.freeze({
-    version:"2.0.0",
+    version:"2.0.1",
     open:function(category,currentToolId){
       loadData().then(function(data){
         if(currentToolId)currentTool=toolById(data,currentToolId)||currentTool;
