@@ -1,5 +1,5 @@
 /*
- * HealingMart Webtools More v2.0.1
+ * HealingMart Webtools More v2.0.2
  *
  * 개별 웹도구 게시물의 기존 실행 JS 아래에 이 파일만 연결하면
  * 홈 · 빠른찾기 · 최근사용 · 카테고리 바텀이 자동 생성됩니다.
@@ -57,6 +57,7 @@
       search:['<circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path>'],
       recent:['<path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v5h5"></path><path d="M12 7v5l3 2"></path>'],
       categories:['<rect x="4" y="4" width="6" height="6" rx="1"></rect><rect x="14" y="4" width="6" height="6" rx="1"></rect><rect x="4" y="14" width="6" height="6" rx="1"></rect><rect x="14" y="14" width="6" height="6" rx="1"></rect>'],
+      webtools:['<path d="M4 7.5h7v-3H4z"></path><path d="M13 4.5h7v7h-7z"></path><path d="M4 13.5h7v6H4z"></path><path d="M13 13.5h7v6h-7z"></path>'],
       close:['<path d="m6 6 12 12M18 6 6 18"></path>'],
       arrow:['<path d="m9 18 6-6-6-6"></path>']
     };
@@ -78,6 +79,9 @@
       ".hm-webtools-bottom-nav button:hover{color:#1769e8;background:#edf5ff}"+
       ".hm-webtools-bottom-nav button[data-hm-webtools-nav='search']{color:#fff;background:linear-gradient(135deg,#1769e8,#2d7af0);box-shadow:0 7px 18px rgba(23,105,232,.24)}"+
       ".hm-webtools-bottom-nav svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}"+
+      ".hm-calc-bottom-nav.hm-webtools-nav-enhanced{grid-template-columns:repeat(5,minmax(0,1fr))!important}"+
+      ".hm-calc-bottom-nav .hm-webtools-existing-button{min-width:0!important}"+
+      ".hm-calc-bottom-nav .hm-webtools-existing-button svg{fill:none!important;stroke:currentColor!important;stroke-width:2!important;stroke-linecap:round!important;stroke-linejoin:round!important}"+
       ".hm-more-overlay{position:fixed;inset:0;z-index:2147483500;padding:18px;display:flex;align-items:flex-end;justify-content:center;background:rgba(15,23,42,.48);backdrop-filter:blur(5px);font-family:Pretendard,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans KR',Arial,sans-serif}"+
       ".hm-more-panel{width:min(860px,100%);max-height:min(82vh,780px);margin:0 auto 78px;overflow:auto;border:1px solid #d8e1eb;border-radius:24px;background:#fff;box-shadow:0 24px 70px rgba(15,23,42,.28)}"+
       ".hm-more-head{position:sticky;top:0;z-index:3;min-height:76px;padding:14px 18px;display:grid;grid-template-columns:minmax(0,1fr) 42px;align-items:center;gap:12px;border-bottom:1px solid #e5eaf0;background:rgba(255,255,255,.97);backdrop-filter:blur(12px)}"+
@@ -440,30 +444,53 @@
     nav.setAttribute("aria-hidden",reached?"true":"false");
   }
 
-  function installNav(){
-    if(document.getElementById(NAV_ID))return;
-    if(document.querySelector(".hm-tools-bottom-nav,.hm-calc-bottom-nav"))return;
+  function existingCalculatorNav(){
+    return document.querySelector(".hm-calc-bottom-nav");
+  }
+
+  function existingWebtoolsNav(){
+    return document.querySelector(".hm-tools-bottom-nav");
+  }
+
+  function enhanceExistingCalculatorNav(nav){
+    if(!nav)return null;
+
+    var oldAuto=document.getElementById(NAV_ID);
+    if(oldAuto)oldAuto.remove();
+
+    if(nav.querySelector("[data-hm-webtools-nav='webtools']")){
+      nav.classList.add("hm-webtools-nav-enhanced");
+      return nav;
+    }
 
     injectStyle();
     removeLegacyBoundary();
 
-    var nav=el("nav","hm-webtools-bottom-nav");
-    nav.id=NAV_ID;
-    nav.setAttribute("aria-label","웹도구 빠른 메뉴");
-    nav.setAttribute("aria-hidden","false");
+    var webtools=makeNavButton("webtools","웹도구");
+    webtools.classList.add("hm-webtools-existing-button");
+    webtools.addEventListener("click",function(){
+      openSheet("all","");
+    });
 
-    var home=makeNavButton("home","홈");
-    var search=makeNavButton("search","빠른찾기");
-    var recent=makeNavButton("recent","최근사용");
-    var categories=makeNavButton("categories","카테고리");
+    var categoryButton=
+      nav.querySelector("[data-hm-calc-nav='categories']")||
+      nav.querySelector("[data-hm-calc-nav='category']")||
+      nav.querySelector("[data-hm-tools-nav='categories']");
 
-    home.addEventListener("click",function(){window.location.href=(dataCache&&dataCache.site&&dataCache.site.homeUrl)||"https://www.healing-mart.com/";});
-    search.addEventListener("click",function(){openSheet("search");});
-    recent.addEventListener("click",function(){openSheet("recent");});
-    categories.addEventListener("click",function(){openSheet("category","");});
+    if(categoryButton){
+      nav.insertBefore(webtools,categoryButton);
+    }else{
+      nav.appendChild(webtools);
+    }
 
-    nav.append(home,search,recent,categories);
-    document.body.appendChild(nav);
+    nav.classList.add("hm-webtools-nav-enhanced");
+    nav.setAttribute("data-hm-webtools-enhanced","true");
+    return nav;
+  }
+
+  function bindAutoNavVisibility(nav){
+    if(!nav||nav.getAttribute("data-hm-webtools-visibility-bound")==="true")return;
+    nav.setAttribute("data-hm-webtools-visibility-bound","true");
     footerTarget=findFooterTarget();
 
     var ticking=false;
@@ -482,8 +509,88 @@
     requestUpdate();
   }
 
+  function createAutomaticNav(){
+    var existing=document.getElementById(NAV_ID);
+    if(existing)return existing;
+
+    injectStyle();
+    removeLegacyBoundary();
+
+    var nav=el("nav","hm-webtools-bottom-nav");
+    nav.id=NAV_ID;
+    nav.setAttribute("aria-label","웹도구 빠른 메뉴");
+    nav.setAttribute("aria-hidden","false");
+
+    var home=makeNavButton("home","홈");
+    var search=makeNavButton("search","빠른찾기");
+    var recent=makeNavButton("recent","최근사용");
+    var categories=makeNavButton("categories","카테고리");
+
+    home.addEventListener("click",function(){
+      window.location.href=(dataCache&&dataCache.site&&dataCache.site.homeUrl)||"https://www.healing-mart.com/";
+    });
+    search.addEventListener("click",function(){openSheet("search");});
+    recent.addEventListener("click",function(){openSheet("recent");});
+    categories.addEventListener("click",function(){openSheet("category","");});
+
+    nav.append(home,search,recent,categories);
+    document.body.appendChild(nav);
+    bindAutoNavVisibility(nav);
+    return nav;
+  }
+
+  function installNav(){
+    injectStyle();
+    removeLegacyBoundary();
+
+    var calcNav=existingCalculatorNav();
+    if(calcNav)return enhanceExistingCalculatorNav(calcNav);
+
+    /*
+     * 웹도구 메인 페이지에는 이미 전용 4개 바텀이 있으므로
+     * 중복 생성하지 않습니다.
+     */
+    var webtoolsNav=existingWebtoolsNav();
+    if(webtoolsNav)return webtoolsNav;
+
+    return createAutomaticNav();
+  }
+
+  function watchLateNavigation(){
+    if(!window.MutationObserver||!document.body)return;
+
+    var finished=false;
+    var observer=new MutationObserver(function(){
+      if(finished)return;
+
+      var calcNav=existingCalculatorNav();
+      if(calcNav){
+        enhanceExistingCalculatorNav(calcNav);
+        finished=true;
+        observer.disconnect();
+        return;
+      }
+
+      var webtoolsNav=existingWebtoolsNav();
+      if(webtoolsNav){
+        var oldAuto=document.getElementById(NAV_ID);
+        if(oldAuto)oldAuto.remove();
+        finished=true;
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(document.body,{childList:true,subtree:true});
+
+    window.setTimeout(function(){
+      if(finished)return;
+      finished=true;
+      observer.disconnect();
+    },5000);
+  }
+
   document.addEventListener("click",function(event){
-    var button=event.target.closest("[data-hm-webtools-more]");
+    var button=event.target&&event.target.closest?event.target.closest("[data-hm-webtools-more]"):null;
     if(!button)return;
     event.preventDefault();
     var category=button.getAttribute("data-hm-webtools-more")||"";
@@ -498,20 +605,21 @@
     if(SCRIPT&&SCRIPT.getAttribute("data-auto-nav")==="false")return;
 
     installNav();
+    watchLateNavigation();
 
     loadData().then(function(data){
       dataCache=data;
       currentTool=detectCurrentTool(data);
       saveRecent(currentTool);
-      document.dispatchEvent(new CustomEvent("hm:webtools:more-ready",{detail:{version:"2.0.1",dataUrl:DATA_URL}}));
+      document.dispatchEvent(new CustomEvent("hm:webtools:more-ready",{detail:{version:"2.0.2",dataUrl:DATA_URL}}));
     }).catch(function(error){
       console.error("[HealingMart Webtools More]",error);
-      document.dispatchEvent(new CustomEvent("hm:webtools:more-error",{detail:{version:"2.0.1",dataUrl:DATA_URL,message:error.message}}));
+      document.dispatchEvent(new CustomEvent("hm:webtools:more-error",{detail:{version:"2.0.2",dataUrl:DATA_URL,message:error.message}}));
     });
   }
 
   window.HMWebtoolsMore=Object.freeze({
-    version:"2.0.1",
+    version:"2.0.2",
     open:function(category,currentToolId){
       loadData().then(function(data){
         if(currentToolId)currentTool=toolById(data,currentToolId)||currentTool;
